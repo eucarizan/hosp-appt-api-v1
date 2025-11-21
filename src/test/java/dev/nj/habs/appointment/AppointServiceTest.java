@@ -20,11 +20,12 @@ public class AppointServiceTest {
     AppointmentRepository appointmentRepository;
 
     @InjectMocks
-    AppointmentService appointmentService;
+    AppointmentServiceImpl appointmentService;
 
     @Test
     void createAppointment_validRequest_returnsAppointmentResponse() {
         Appointment appointment = new Appointment("dr. house", "john doe", LocalDate.of(2021, 12, 1));
+        appointment.setId(1L);
         AppointmentRequest request = new AppointmentRequest("Dr. House", "John Doe", LocalDate.of(2021, 12, 1));
         when(appointmentRepository.save(any(Appointment.class))).thenReturn(appointment);
 
