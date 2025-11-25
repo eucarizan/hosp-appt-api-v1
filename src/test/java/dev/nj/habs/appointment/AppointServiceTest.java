@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,16 +30,18 @@ public class AppointServiceTest {
 
     private Appointment savedAppointment;
     private AppointmentResponse appointmentResponse;
+    private static final LocalDate DATE1 = LocalDate.of(2021, 12, 1);
+    private static final LocalDate DATE2 = LocalDate.of(2022, 11, 1);
 
     @BeforeEach
     void setup() {
-        savedAppointment = new Appointment("dr. house", "john doe", LocalDate.of(2021, 12, 1));
-        appointmentResponse = new AppointmentResponse(1L, "dr. house", "john doe", LocalDate.of(2021, 12, 1));
+        savedAppointment = new Appointment("dr. house", "john doe", DATE1);
+        appointmentResponse = new AppointmentResponse(1L, "dr. house", "john doe", DATE1);
     }
 
     @Test
     void createAppointment_validRequest_returnsAppointmentResponse() {
-        AppointmentRequest request = new AppointmentRequest("Dr. House", "John Doe", LocalDate.of(2021, 12, 1));
+        AppointmentRequest request = new AppointmentRequest("Dr. House", "John Doe", DATE1);
         when(appointmentRepository.save(any(Appointment.class))).thenReturn(savedAppointment);
         when(appointmentMapper.toResponse(any(Appointment.class))).thenReturn(appointmentResponse);
 
@@ -48,12 +51,12 @@ public class AppointServiceTest {
         assertEquals(1L, response.idApp());
         assertEquals("dr. house", response.doctor());
         assertEquals("john doe", response.patient());
-        assertEquals(LocalDate.of(2021, 12, 1), response.date());
+        assertEquals(DATE1, response.date());
     }
 
     @Test
     void createAppointment_nullDoctor_throwsException() {
-        AppointmentRequest request = new AppointmentRequest(null, "John Doe", LocalDate.of(2021, 12, 1));
+        AppointmentRequest request = new AppointmentRequest(null, "John Doe", DATE1);
 
         Exception exception = assertThrows(
                 IllegalArgumentException.class,
@@ -64,7 +67,7 @@ public class AppointServiceTest {
 
     @Test
     void createAppointment_emptyDoctor_throwsException() {
-        AppointmentRequest request = new AppointmentRequest("   ", "John Doe", LocalDate.of(2021, 12, 1));
+        AppointmentRequest request = new AppointmentRequest("   ", "John Doe", DATE1);
 
         Exception exception = assertThrows(
                 IllegalArgumentException.class,
@@ -75,7 +78,7 @@ public class AppointServiceTest {
 
     @Test
     void createAppointment_nullPatient_throwsException() {
-        AppointmentRequest request = new AppointmentRequest("Dr. House", null, LocalDate.of(2021, 12, 1));
+        AppointmentRequest request = new AppointmentRequest("Dr. House", null, DATE1);
 
         Exception exception = assertThrows(
                 IllegalArgumentException.class,
@@ -86,7 +89,7 @@ public class AppointServiceTest {
 
     @Test
     void createAppointment_emptyPatient_throwsException() {
-        AppointmentRequest request = new AppointmentRequest("Dr. House", "   ", LocalDate.of(2021, 12, 1));
+        AppointmentRequest request = new AppointmentRequest("Dr. House", "   ", DATE1);
 
         Exception exception = assertThrows(
                 IllegalArgumentException.class,
@@ -128,5 +131,22 @@ public class AppointServiceTest {
                 () -> appointmentService.deleteAppointment(nonExistingId));
 
         assertTrue(exception.getMessage().contains("The appointment does not exist or was already cancelled"));
+    }
+
+    @Test
+    void getAllAppointments_returnsListOfAppointments() {
+        Appointment appointment2 = new Appointment("lea wong", "jane doe", DATE2);
+
+        when(appointmentRepository.findAll()).thenReturn(List.of(savedAppointment, appointment2));
+        when(appointmentMapper.toResponse(savedAppointment)).thenReturn(
+                new AppointmentResponse(1L, "dr. house", "john doe", DATE1));
+        when(appointmentMapper.toResponse(appointment2)).thenReturn(
+                new AppointmentResponse(2L, "lea wong", "jane doe", DATE2));
+
+        List<AppointmentResponse> responses = appointmentService.getAllApointments();
+
+        assertEquals(2, responses.size());
+        assertEquals(1L, responses.get(0).idApp());
+        assertEquals(2L, responses.get(1).idApp());
     }
 }
