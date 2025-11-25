@@ -48,4 +48,10 @@ public class AppointmentController {
         logger.warn("Validation errors: {}", errors);
         return ResponseEntity.badRequest().body(Map.of("messages", errors));
     }
+
+    @ExceptionHandler(AppointmentNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleAppointmentNotFoundException(AppointmentNotFoundException ex) {
+        logger.warn("error: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
 }
