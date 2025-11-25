@@ -117,4 +117,16 @@ public class AppointServiceTest {
         assertEquals(1L, response.idApp());
         verify(appointmentRepository).delete(savedAppointment);
     }
+
+    @Test
+    void deleteAppointment_nonExistingId_throwsAppointmentNotFoundException() {
+        Long nonExistingId = 999L;
+        when(appointmentRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(
+                AppointmentNotFoundException.class,
+                () -> appointmentService.deleteAppointment(nonExistingId));
+
+        assertTrue(exception.getMessage().contains("The appointment does not exist or was already cancelled"));
+    }
 }
