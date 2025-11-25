@@ -13,6 +13,7 @@ import static dev.nj.habs.TestUtils.asJsonString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,8 +22,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AppointmentControllerTest {
 
     private static final String SET_APPOINTMENTS = "/setAppointments";
+    private static final String DELETE_APPOINTMENTS = "/deleteAppointment";
     private static final AppointmentRequest VALID_REQUEST = new AppointmentRequest(
             "Dr. House", "John Doe", LocalDate.of(2021, 12, 1)
+    );
+    private static final AppointmentResponse VALID_RESPONSE = new AppointmentResponse(
+            1L, "dr. house", "john doe", LocalDate.of(2021, 12, 1)
     );
 
     @Autowired
@@ -33,14 +38,11 @@ public class AppointmentControllerTest {
 
     @Test
     void createAppointment_validRequest_returnsOk() throws Exception {
-        AppointmentRequest request = new AppointmentRequest(VALID_REQUEST.doctor(), VALID_REQUEST.patient(), VALID_REQUEST.date());
-        AppointmentResponse response = new AppointmentResponse(1L, "dr. house", "john doe", LocalDate.of(2021, 12, 1));
-
-        when(appointmentService.createAppointment(any(AppointmentRequest.class))).thenReturn(response);
+        when(appointmentService.createAppointment(any(AppointmentRequest.class))).thenReturn(VALID_RESPONSE);
 
         mockMvc.perform(post(SET_APPOINTMENTS)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request)))
+                        .content(asJsonString(VALID_REQUEST)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idApp").value(1))
                 .andExpect(jsonPath("$.doctor").value("dr. house"))
@@ -105,5 +107,16 @@ public class AppointmentControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.messages").isArray())
                 .andExpect(jsonPath("$.messages", hasItem("Date field is required")));
+    }
+
+    @Test
+    void deleteAppointment_existingId_returnsOk() throws Exception {
+        when(appointmentService.deleteAppointment(1L)).thenReturn(VALID_RESPONSE);
+
+        mockMvc.perform(delete(DELETE_APPOINTMENTS)
+                        .param("id", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idApp").value(1))
+                .andExpect(jsonPath("$.doctor").value("dr. house"));
     }
 }
