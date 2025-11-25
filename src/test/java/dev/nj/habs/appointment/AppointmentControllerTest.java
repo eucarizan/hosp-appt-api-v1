@@ -119,4 +119,15 @@ public class AppointmentControllerTest {
                 .andExpect(jsonPath("$.idApp").value(1))
                 .andExpect(jsonPath("$.doctor").value("dr. house"));
     }
+
+    @Test
+    void deleteAppointment_nonExistingId_returns400() throws Exception {
+        when(appointmentService.deleteAppointment(999L))
+                .thenThrow(new AppointmentNotFoundException("The appointment does not exist or was already cancelled"));
+
+        mockMvc.perform(delete(DELETE_APPOINTMENTS)
+                        .param("id", "999"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("The appointment does not exist or was already cancelled"));
+    }
 }
