@@ -37,6 +37,14 @@ public class AppointmentController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/appointments")
+    public ResponseEntity<List<AppointmentResponse>> getAppointments() {
+        logger.info("Received request to get appointments");
+        List<AppointmentResponse> appointments = appointmentService.getAllAppointments();
+        logger.info("Returning {} appointments", appointments.size());
+        return ResponseEntity.ok(appointments);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, List<String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<String> errors = ex.getBindingResult()
