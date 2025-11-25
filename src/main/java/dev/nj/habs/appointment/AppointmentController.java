@@ -1,11 +1,18 @@
 package dev.nj.habs.appointment;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class AppointmentController {
@@ -18,10 +25,22 @@ public class AppointmentController {
     }
 
     @PostMapping("/setAppointments")
-    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentRequest request) {
+    public ResponseEntity<AppointmentResponse> createAppointment(@Valid @RequestBody AppointmentRequest request) {
         logger.info("Received request to create an appointment");
         AppointmentResponse response = appointmentService.createAppointment(request);
         logger.info("Successfully created and appointment: {}", response.idApp());
         return ResponseEntity.ok(response);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, List<String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        List<String> errors = ex.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .toList();
+
+        logger.warn("Validation errors: {}", errors);
+        return ResponseEntity.badRequest().body(Map.of("messages", errors));
     }
 }
