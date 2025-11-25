@@ -143,7 +143,7 @@ public class AppointServiceTest {
         when(appointmentMapper.toResponse(appointment2)).thenReturn(
                 new AppointmentResponse(2L, "lea wong", "jane doe", DATE2));
 
-        List<AppointmentResponse> responses = appointmentService.getAllApointments();
+        List<AppointmentResponse> responses = appointmentService.getAllAppointments();
 
         assertEquals(2, responses.size());
         assertEquals(1L, responses.get(0).idApp());

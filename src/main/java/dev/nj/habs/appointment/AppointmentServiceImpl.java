@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -52,5 +53,17 @@ public class AppointmentServiceImpl implements AppointmentService{
         appointmentRepository.delete(appointment);
         logger.debug("Successfully deleted the appointment {}", id);
         return response;
+    }
+
+    @Override
+    public List<AppointmentResponse> getAllAppointments() {
+        logger.debug("Attempting to get list of all appointments");
+
+        List<AppointmentResponse> appointments = appointmentRepository.findAll()
+                .stream().map(appointmentMapper::toResponse)
+                .toList();
+
+        logger.debug("Successfully list appointments: {}", appointments.size());
+        return appointments;
     }
 }
