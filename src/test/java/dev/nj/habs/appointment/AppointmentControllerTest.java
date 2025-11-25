@@ -144,4 +144,12 @@ public class AppointmentControllerTest {
                 .andExpect(jsonPath("$[0].idApp").value(1))
                 .andExpect(jsonPath("$[1].idApp").value(2));
     }
+
+    @Test
+    void getAllAppointments_noAppointments_returnsNoContent() throws Exception {
+        when(appointmentService.getAllAppointments()).thenReturn(List.of());
+
+        mockMvc.perform(get(GET_APPOINTMENTS))
+                .andExpect(status().isNoContent());
+    }
 }

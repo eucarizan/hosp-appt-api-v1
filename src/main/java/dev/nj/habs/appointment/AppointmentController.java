@@ -41,6 +41,10 @@ public class AppointmentController {
     public ResponseEntity<List<AppointmentResponse>> getAppointments() {
         logger.info("Received request to get appointments");
         List<AppointmentResponse> appointments = appointmentService.getAllAppointments();
+        if (appointments.isEmpty()) {
+            logger.warn("No appointments");
+            return ResponseEntity.noContent().build();
+        }
         logger.info("Returning {} appointments", appointments.size());
         return ResponseEntity.ok(appointments);
     }
