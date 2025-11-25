@@ -11,9 +11,11 @@ public class AppointmentServiceImpl implements AppointmentService{
 
     private static final Logger logger = LoggerFactory.getLogger(AppointmentServiceImpl.class);
     private final AppointmentRepository appointmentRepository;
+    private final AppointmentMapper appointmentMapper;
 
-    public AppointmentServiceImpl(AppointmentRepository appointmentRepository) {
+    public AppointmentServiceImpl(AppointmentRepository appointmentRepository, AppointmentMapper appointmentMapper) {
         this.appointmentRepository = appointmentRepository;
+        this.appointmentMapper = appointmentMapper;
     }
 
     @Override
@@ -34,14 +36,21 @@ public class AppointmentServiceImpl implements AppointmentService{
 
         Appointment appointment = appointmentRepository.save(new Appointment(request.doctor(), request.patient(), request.date()));
 
-        AppointmentResponse response = new AppointmentResponse(
-                appointment.getId(),
-                appointment.getDoctor(),
-                appointment.getPatient(),
-                appointment.getDate()
-        );
-
         logger.debug("Successfully created an appointment");
+        return appointmentMapper.toResponse(appointment);
+    }
+
+    @Override
+    public AppointmentResponse deleteAppointment(Long id) {
+        logger.debug("Attempting to delete an appointment {}", id);
+
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() ->
+                        new AppointmentNotFoundException("The appointment does not exist or was already cancelled"));
+
+        AppointmentResponse response = appointmentMapper.toResponse(appointment);
+        appointmentRepository.delete(appointment);
+        logger.debug("Successfully deleted the appointment {}", id);
         return response;
     }
 }

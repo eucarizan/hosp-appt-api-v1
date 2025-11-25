@@ -21,21 +21,26 @@ public class AppointServiceTest {
     @Mock
     AppointmentRepository appointmentRepository;
 
+    @Mock
+    AppointmentMapper appointmentMapper;
+
     @InjectMocks
     AppointmentServiceImpl appointmentService;
 
     private Appointment savedAppointment;
+    private AppointmentResponse appointmentResponse;
 
     @BeforeEach
     void setup() {
         savedAppointment = new Appointment("dr. house", "john doe", LocalDate.of(2021, 12, 1));
+        appointmentResponse = new AppointmentResponse(1L, "dr. house", "john doe", LocalDate.of(2021, 12, 1));
     }
 
     @Test
     void createAppointment_validRequest_returnsAppointmentResponse() {
-        savedAppointment.setId(1L);
         AppointmentRequest request = new AppointmentRequest("Dr. House", "John Doe", LocalDate.of(2021, 12, 1));
         when(appointmentRepository.save(any(Appointment.class))).thenReturn(savedAppointment);
+        when(appointmentMapper.toResponse(any(Appointment.class))).thenReturn(appointmentResponse);
 
         AppointmentResponse response = appointmentService.createAppointment(request);
 
@@ -104,11 +109,12 @@ public class AppointServiceTest {
     @Test
     void deleteAppointment_existingId_returnsDeletedAppointment() {
         when(appointmentRepository.findById(1L)).thenReturn(Optional.of(savedAppointment));
+        when(appointmentMapper.toResponse(any(Appointment.class))).thenReturn(appointmentResponse);
 
-        Appointment response = appointmentService.deleteAppointment(1L);
+        AppointmentResponse response = appointmentService.deleteAppointment(1L);
 
         assertNotNull(response);
-        assertEquals(1L, response.getId());
+        assertEquals(1L, response.idApp());
         verify(appointmentRepository).delete(savedAppointment);
     }
 }
