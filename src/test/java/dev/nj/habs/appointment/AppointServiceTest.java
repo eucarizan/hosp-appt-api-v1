@@ -8,9 +8,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -97,5 +99,16 @@ public class AppointServiceTest {
                 () -> appointmentService.createAppointment(request));
 
         assertTrue(exception.getMessage().contains("Date field is required"));
+    }
+
+    @Test
+    void deleteAppointment_existingId_returnsDeletedAppointment() {
+        when(appointmentRepository.findById(1L)).thenReturn(Optional.of(savedAppointment));
+
+        Appointment response = appointmentService.deleteAppointment(1L);
+
+        assertNotNull(response);
+        assertEquals(1L, response.getId());
+        verify(appointmentRepository).delete(savedAppointment);
     }
 }
