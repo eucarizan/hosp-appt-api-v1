@@ -7,14 +7,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.net.URI;
 import java.time.LocalDate;
+import java.util.List;
 
 import static dev.nj.habs.TestUtils.asJsonString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -23,6 +24,7 @@ public class AppointmentControllerTest {
 
     private static final String SET_APPOINTMENTS = "/setAppointments";
     private static final String DELETE_APPOINTMENTS = "/deleteAppointment";
+    private static final String GET_APPOINTMENTS = "/appointments";
     private static final AppointmentRequest VALID_REQUEST = new AppointmentRequest(
             "Dr. House", "John Doe", LocalDate.of(2021, 12, 1)
     );
@@ -50,7 +52,7 @@ public class AppointmentControllerTest {
     }
 
     @Test
-    void createAppointment_nullDoctor_returns400() throws Exception {
+    void createAppointment_nullDoctor_returnsBadRequest() throws Exception {
         AppointmentRequest request = new AppointmentRequest(null, VALID_REQUEST.patient(), VALID_REQUEST.date());
 
         mockMvc.perform(post(SET_APPOINTMENTS)
@@ -62,7 +64,7 @@ public class AppointmentControllerTest {
     }
 
     @Test
-    void createAppointment_emptyDoctor_returns400() throws Exception {
+    void createAppointment_emptyDoctor_returnsBadRequest() throws Exception {
         AppointmentRequest request = new AppointmentRequest("   ", VALID_REQUEST.patient(), VALID_REQUEST.date());
 
         mockMvc.perform(post(SET_APPOINTMENTS)
@@ -74,7 +76,7 @@ public class AppointmentControllerTest {
     }
 
     @Test
-    void createAppointment_nullPatient_returns400() throws Exception {
+    void createAppointment_nullPatient_returnsBadRequest() throws Exception {
         AppointmentRequest request = new AppointmentRequest(VALID_REQUEST.doctor(), null, VALID_REQUEST.date());
 
         mockMvc.perform(post(SET_APPOINTMENTS)
@@ -86,7 +88,7 @@ public class AppointmentControllerTest {
     }
 
     @Test
-    void createAppointment_emptyPatient_returns400() throws Exception {
+    void createAppointment_emptyPatient_returnsBadRequest() throws Exception {
         AppointmentRequest request = new AppointmentRequest(VALID_REQUEST.doctor(), "   ", VALID_REQUEST.date());
 
         mockMvc.perform(post(SET_APPOINTMENTS)
@@ -98,7 +100,7 @@ public class AppointmentControllerTest {
     }
 
     @Test
-    void createAppointment_nullDate_returns400() throws Exception {
+    void createAppointment_nullDate_returnsBadRequest() throws Exception {
         AppointmentRequest request = new AppointmentRequest(VALID_REQUEST.doctor(), VALID_REQUEST.patient(), null);
 
         mockMvc.perform(post(SET_APPOINTMENTS)
@@ -121,7 +123,7 @@ public class AppointmentControllerTest {
     }
 
     @Test
-    void deleteAppointment_nonExistingId_returns400() throws Exception {
+    void deleteAppointment_nonExistingId_returnsBadRequest() throws Exception {
         when(appointmentService.deleteAppointment(999L))
                 .thenThrow(new AppointmentNotFoundException("The appointment does not exist or was already cancelled"));
 
@@ -129,5 +131,17 @@ public class AppointmentControllerTest {
                         .param("id", "999"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("The appointment does not exist or was already cancelled"));
+    }
+
+    @Test
+    void getAllAppointments_withAppointments_returnsOk() throws Exception {
+        AppointmentResponse response2 = new AppointmentResponse(2L, "lea wong", "jane doe", LocalDate.of(2022, 11, 1));
+
+        when(appointmentService.getAllAppointments()).thenReturn(List.of(VALID_RESPONSE, response2));
+
+        mockMvc.perform(get(GET_APPOINTMENTS))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].idApp").value(1))
+                .andExpect(jsonPath("$[1].idApp").value(2));
     }
 }
