@@ -149,4 +149,13 @@ public class AppointServiceTest {
         assertEquals(1L, responses.get(0).idApp());
         assertEquals(2L, responses.get(1).idApp());
     }
+
+    @Test
+    void getAllAppointments_emptyList_returnsEmptyList() {
+        when(appointmentRepository.findAll()).thenReturn(List.of());
+
+        List<AppointmentResponse> responses = appointmentService.getAllAppointments();
+
+        assertTrue(responses.isEmpty());
+    }
 }
