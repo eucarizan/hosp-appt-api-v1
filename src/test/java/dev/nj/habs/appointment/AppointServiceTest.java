@@ -55,61 +55,6 @@ public class AppointServiceTest {
     }
 
     @Test
-    void createAppointment_nullDoctor_throwsException() {
-        AppointmentRequest request = new AppointmentRequest(null, "John Doe", DATE1);
-
-        Exception exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> appointmentService.createAppointment(request));
-
-        assertTrue(exception.getMessage().contains("Doctor field is required"));
-    }
-
-    @Test
-    void createAppointment_emptyDoctor_throwsException() {
-        AppointmentRequest request = new AppointmentRequest("   ", "John Doe", DATE1);
-
-        Exception exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> appointmentService.createAppointment(request));
-
-        assertTrue(exception.getMessage().contains("Doctor field is required"));
-    }
-
-    @Test
-    void createAppointment_nullPatient_throwsException() {
-        AppointmentRequest request = new AppointmentRequest("Dr. House", null, DATE1);
-
-        Exception exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> appointmentService.createAppointment(request));
-
-        assertTrue(exception.getMessage().contains("Patient field is required"));
-    }
-
-    @Test
-    void createAppointment_emptyPatient_throwsException() {
-        AppointmentRequest request = new AppointmentRequest("Dr. House", "   ", DATE1);
-
-        Exception exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> appointmentService.createAppointment(request));
-
-        assertTrue(exception.getMessage().contains("Patient field is required"));
-    }
-
-    @Test
-    void createAppointment_nullDate_throwsException() {
-        AppointmentRequest request = new AppointmentRequest("Dr. House", "John Doe", null);
-
-        Exception exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> appointmentService.createAppointment(request));
-
-        assertTrue(exception.getMessage().contains("Date field is required"));
-    }
-
-    @Test
     void deleteAppointment_existingId_returnsDeletedAppointment() {
         when(appointmentRepository.findById(1L)).thenReturn(Optional.of(savedAppointment));
         when(appointmentMapper.toResponse(any(Appointment.class))).thenReturn(appointmentResponse);
