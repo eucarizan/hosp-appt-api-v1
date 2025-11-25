@@ -1,5 +1,6 @@
 package dev.nj.habs.appointment;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,12 +22,18 @@ public class AppointServiceTest {
     @InjectMocks
     AppointmentServiceImpl appointmentService;
 
+    private Appointment savedAppointment;
+
+    @BeforeEach
+    void setup() {
+        savedAppointment = new Appointment("dr. house", "john doe", LocalDate.of(2021, 12, 1));
+    }
+
     @Test
     void createAppointment_validRequest_returnsAppointmentResponse() {
-        Appointment appointment = new Appointment("dr. house", "john doe", LocalDate.of(2021, 12, 1));
-        appointment.setId(1L);
+        savedAppointment.setId(1L);
         AppointmentRequest request = new AppointmentRequest("Dr. House", "John Doe", LocalDate.of(2021, 12, 1));
-        when(appointmentRepository.save(any(Appointment.class))).thenReturn(appointment);
+        when(appointmentRepository.save(any(Appointment.class))).thenReturn(savedAppointment);
 
         AppointmentResponse response = appointmentService.createAppointment(request);
 
@@ -49,8 +56,30 @@ public class AppointServiceTest {
     }
 
     @Test
+    void createAppointment_emptyDoctor_throwsException() {
+        AppointmentRequest request = new AppointmentRequest("   ", "John Doe", LocalDate.of(2021, 12, 1));
+
+        Exception exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> appointmentService.createAppointment(request));
+
+        assertTrue(exception.getMessage().contains("Doctor field is required"));
+    }
+
+    @Test
     void createAppointment_nullPatient_throwsException() {
         AppointmentRequest request = new AppointmentRequest("Dr. House", null, LocalDate.of(2021, 12, 1));
+
+        Exception exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> appointmentService.createAppointment(request));
+
+        assertTrue(exception.getMessage().contains("Patient field is required"));
+    }
+
+    @Test
+    void createAppointment_emptyPatient_throwsException() {
+        AppointmentRequest request = new AppointmentRequest("Dr. House", "   ", LocalDate.of(2021, 12, 1));
 
         Exception exception = assertThrows(
                 IllegalArgumentException.class,
