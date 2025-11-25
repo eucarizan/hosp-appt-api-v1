@@ -6,10 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +25,15 @@ public class AppointmentController {
     public ResponseEntity<AppointmentResponse> createAppointment(@Valid @RequestBody AppointmentRequest request) {
         logger.info("Received request to create an appointment");
         AppointmentResponse response = appointmentService.createAppointment(request);
-        logger.info("Successfully created and appointment: {}", response.idApp());
+        logger.info("Successfully created appointment: {}", response.idApp());
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/deleteAppointment")
+    public ResponseEntity<AppointmentResponse> deleteAppointment(@RequestParam("id") Long id) {
+        logger.info("Received request to delete appointment: {}", id);
+        AppointmentResponse response = appointmentService.deleteAppointment(id);
+        logger.info("Successfully deleted appointment: {}", id);
         return ResponseEntity.ok(response);
     }
 
