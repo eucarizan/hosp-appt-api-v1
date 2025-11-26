@@ -18,8 +18,7 @@ import java.time.LocalDate;
 import static dev.nj.habs.TestUtils.asJsonString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,6 +29,7 @@ public class AppointmentControllerIT {
 
     private static final String SET_APPOINTMENTS = "/setAppointment";
     private static final String DELETE_APPOINTMENT = "/deleteAppointment";
+    private static final String GET_APPOINTMENTS = "/appointments";
     private static final AppointmentRequest VALID_REQUEST = new AppointmentRequest(
             "Dr. House", "John Doe", LocalDate.of(2021, 12, 1));
 
@@ -102,6 +102,28 @@ public class AppointmentControllerIT {
         mockMvc.perform(delete(DELETE_APPOINTMENT)
                         .param("id", "999"))
                 .andExpect(status().isBadRequest());
+
+        assertEquals(0, appointmentRepository.count());
+    }
+
+    @Test
+    void it_getAppointments_returnsAppointments() throws Exception {
+        Appointment appointment1 = new Appointment("dr. house", "john doe", LocalDate.of(2021, 12, 1));
+        Appointment appointment2 = new Appointment("lea wong", "jane doe", LocalDate.of(2022, 11, 1));
+        appointmentRepository.save(appointment1);
+        appointmentRepository.save(appointment2);
+
+        mockMvc.perform(get(GET_APPOINTMENTS))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+
+        assertEquals(2, appointmentRepository.count());
+    }
+
+    @Test
+    void it_getAppointments_noAppointments_returnsNoContent() throws Exception {
+        mockMvc.perform(get(GET_APPOINTMENTS))
+                .andExpect(status().isNoContent());
 
         assertEquals(0, appointmentRepository.count());
     }
