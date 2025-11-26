@@ -12,8 +12,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Testcontainers
@@ -61,5 +60,34 @@ public class AppointmentServiceIT {
         assertEquals("dr. house", savedAppointment.getDoctor());
         assertEquals("john doe", savedAppointment.getPatient());
         assertEquals(DATE1, savedAppointment.getDate());
+    }
+
+    @Test
+    void it_deleteAppointment_existingId_removesFromDatabase() {
+        Appointment appointment = new Appointment("dr. house", "john doe", DATE1);
+        appointment = appointmentRepository.save(appointment);
+        Long appointmentId = appointment.getId();
+
+        AppointmentResponse response = appointmentService.deleteAppointment(appointmentId);
+
+        assertNotNull(response);
+        assertEquals(appointmentId, response.idApp());
+        assertEquals("dr. house", response.doctor());
+        assertEquals("john doe", response.patient());
+        assertEquals(DATE1, response.date());
+
+        assertEquals(0, appointmentRepository.count());
+        assertTrue(appointmentRepository.findById(appointmentId).isEmpty());
+    }
+
+    @Test
+    void it_deleteAppointment_nonExistingId_throwsException() {
+        Long nonExistingId = 999L;
+
+        Exception exception = assertThrows(
+                AppointmentNotFoundException.class,
+                () -> appointmentService.deleteAppointment(nonExistingId));
+
+        assertTrue(exception.getMessage().contains("The appointment does not exist or was already cancelled"));
     }
 }
