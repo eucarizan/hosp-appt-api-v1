@@ -6,6 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -49,5 +51,19 @@ public class DoctorServiceTest {
 
         assertTrue(exception.getMessage().contains("Doctor already exists"));
         verify(doctorRepository, never()).save(any(Doctor.class));
+    }
+
+    @Test
+    void getAllDoctors_returnsListOfDoctors() {
+        DoctorResponse doctor1 = new DoctorResponse(1L, "lea wong");
+        DoctorResponse doctor2 = new DoctorResponse(2L, "pamella upperson");
+
+        when(doctorRepository.findAll()).thenReturn(List.of(doctor1, doctor2));
+
+        List<DoctorResponse> responses = doctorService.getAllDoctors();
+
+        assertEquals(2, responses.size());
+        assertEquals("lea wong", responses.get(0).doctorName());
+        assertEquals("pamella upperson", responses.get(1).doctorName());
     }
 }
