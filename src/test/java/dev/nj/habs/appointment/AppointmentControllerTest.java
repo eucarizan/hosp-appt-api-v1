@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AppointmentController.class)
 public class AppointmentControllerTest {
 
-    private static final String SET_APPOINTMENTS = "/setAppointments";
+    private static final String SET_APPOINTMENTS = "/setAppointment";
     private static final String DELETE_APPOINTMENTS = "/deleteAppointment";
     private static final String GET_APPOINTMENTS = "/appointments";
     private static final AppointmentRequest VALID_REQUEST = new AppointmentRequest(

@@ -22,7 +22,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentResponse createAppointment(AppointmentRequest request) {
         logger.debug("Attempting to create an appointment");
 
-        Appointment appointment = appointmentRepository.save(new Appointment(request.doctor(), request.patient(), request.date()));
+        Appointment appointment = appointmentRepository.save(new Appointment(request.doctor().toLowerCase(), request.patient().toLowerCase(), request.date()));
 
         logger.debug("Successfully created an appointment");
         return appointmentMapper.toResponse(appointment);

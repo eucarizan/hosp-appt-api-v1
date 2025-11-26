@@ -21,7 +21,7 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
-    @PostMapping("/setAppointments")
+    @PostMapping("/setAppointment")
     public ResponseEntity<AppointmentResponse> createAppointment(@Valid @RequestBody AppointmentRequest request) {
         logger.info("Received request to create an appointment");
         AppointmentResponse response = appointmentService.createAppointment(request);
