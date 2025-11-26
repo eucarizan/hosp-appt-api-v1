@@ -1,0 +1,30 @@
+package dev.nj.habs.doctor;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+public class Doctor {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String doctorName;
+
+    public Doctor() {}
+
+    public Doctor(String doctorName) {
+        this.doctorName = doctorName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getDoctorName() {
+        return doctorName;
+    }
+}
