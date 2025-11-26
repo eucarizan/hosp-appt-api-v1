@@ -6,4 +6,6 @@ public interface DoctorService {
     DoctorResponse createDoctor(CreateDoctorRequest request);
 
     List<DoctorResponse> getAllDoctors();
+
+    List<AvailableDateResponse> getAvailableDatesByDoctor(String doctor);
 }
