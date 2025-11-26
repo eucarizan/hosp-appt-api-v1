@@ -11,6 +11,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -89,5 +90,29 @@ public class AppointmentServiceIT {
                 () -> appointmentService.deleteAppointment(nonExistingId));
 
         assertTrue(exception.getMessage().contains("The appointment does not exist or was already cancelled"));
+    }
+
+    @Test
+    void it_getAppointments_returnsPersistedAppointments() {
+        Appointment appointment1 = new Appointment("dr. house", "john doe", DATE1);
+        Appointment appointment2 = new Appointment("lea wong", "jane doe", DATE2);
+        appointmentRepository.save(appointment1);
+        appointmentRepository.save(appointment2);
+
+        List<AppointmentResponse> responses = appointmentService.getAllAppointments();
+
+        assertEquals(2, responses.size());
+        assertEquals("dr. house", responses.get(0).doctor());
+        assertEquals("john doe", responses.get(0).patient());
+        assertEquals("lea wong", responses.get(1).doctor());
+        assertEquals("jane doe", responses.get(1).patient());
+    }
+
+    @Test
+    void it_getAppointments_emptyDatabase_returnsEmptyList() {
+        List<AppointmentResponse> responses = appointmentService.getAllAppointments();
+
+        assertTrue(responses.isEmpty());
+        assertEquals(0, appointmentRepository.count());
     }
 }
