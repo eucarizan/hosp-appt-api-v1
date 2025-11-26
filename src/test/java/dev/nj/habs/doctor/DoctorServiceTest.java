@@ -89,7 +89,41 @@ public class DoctorServiceTest {
     }
 
     @Test
-    void getAvailableDates_doctorExists_returnsListOfDates() {
+    void getAvailableDates_existsDoctor_returnsFourAvailableDates() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+
+        when(doctorRepository.existsByDoctorName(DR_WONG)).thenReturn(true);
+        when(appointmentRepository.existsByDoctorAndDate(DR_WONG, tomorrow)).thenReturn(false);
+        when(appointmentRepository.existsByDoctorAndDate(DR_WONG, tomorrow.plusDays(1))).thenReturn(false);
+        when(appointmentRepository.existsByDoctorAndDate(DR_WONG, tomorrow.plusDays(2))).thenReturn(false);
+        when(appointmentRepository.existsByDoctorAndDate(DR_WONG, tomorrow.plusDays(3))).thenReturn(false);
+
+        List<AvailableDateResponse> responses = doctorService.getAvailableDatesByDoctor(DR_WONG);
+
+        assertEquals(4, responses.size());
+        assertEquals(tomorrow, responses.get(0).availabletime());
+        assertFalse(responses.get(0).booked());
+        assertEquals(tomorrow.plusDays(1), responses.get(1).availabletime());
+        assertFalse(responses.get(1).booked());
+        assertEquals(tomorrow.plusDays(2), responses.get(2).availabletime());
+        assertFalse(responses.get(2).booked());
+        assertEquals(tomorrow.plusDays(3), responses.get(3).availabletime());
+        assertFalse(responses.get(3).booked());
+    }
+
+    @Test
+    void getAvailableDates_nonExistingDoctor_returnsEmptyList() {
+        String doctorName = "unknown doctor";
+
+        when(doctorRepository.existsByDoctorName(doctorName)).thenReturn(false);
+
+        List<AvailableDateResponse> responses = doctorService.getAvailableDatesByDoctor(doctorName);
+
+        assertTrue(responses.isEmpty());
+    }
+
+    @Test
+    void getAvailableDates_someDatesBooked_returnsCorrectBookedStatus() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         when(doctorRepository.existsByDoctorName(DR_WONG)).thenReturn(true);
