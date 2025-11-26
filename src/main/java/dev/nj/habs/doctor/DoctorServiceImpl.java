@@ -44,7 +44,7 @@ public class DoctorServiceImpl implements DoctorService {
                 .map(doctorMapper::toResponse)
                 .toList();
 
-        logger.debug("Successfully lists doctor: {}", responseList.size());
+        logger.debug("Successfully listed {} doctors", responseList.size());
         return responseList;
     }
 

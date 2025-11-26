@@ -67,7 +67,18 @@ public class DoctorServiceTest {
         List<DoctorResponse> responses = doctorService.getAllDoctors();
 
         assertEquals(2, responses.size());
+        assertEquals(1L, responses.get(0).id());
         assertEquals("lea wong", responses.get(0).doctorName());
+        assertEquals(2L, responses.get(1).id());
         assertEquals("pamella upperson", responses.get(1).doctorName());
+    }
+
+    @Test
+    void getAllDoctors_emptyList_returnsEmptyList() {
+        when(doctorRepository.findAll()).thenReturn(List.of());
+
+        List<DoctorResponse> responses = doctorService.getAllDoctors();
+
+        assertTrue(responses.isEmpty());
     }
 }
