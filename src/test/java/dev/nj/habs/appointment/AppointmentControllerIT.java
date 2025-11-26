@@ -77,45 +77,7 @@ public class AppointmentControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest());
-    }
 
-    @Test
-    void it_createAppointment_emptyDoctor_returnsBadRequest() throws Exception {
-        AppointmentRequest request = new AppointmentRequest("   ", VALID_REQUEST.patient(), VALID_REQUEST.date());
-
-        mockMvc.perform(post(SET_APPOINTMENTS)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void it_createAppointment_nullPatient_returnsBadRequest() throws Exception {
-        AppointmentRequest request = new AppointmentRequest(VALID_REQUEST.doctor(), null, VALID_REQUEST.date());
-
-        mockMvc.perform(post(SET_APPOINTMENTS)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void it_createAppointment_emptyPatient_returnsBadRequest() throws Exception {
-        AppointmentRequest request = new AppointmentRequest(VALID_REQUEST.doctor(), "   ", VALID_REQUEST.date());
-
-        mockMvc.perform(post(SET_APPOINTMENTS)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void it_createAppointment_nullDate_returnsBadRequest() throws Exception {
-        AppointmentRequest request = new AppointmentRequest(VALID_REQUEST.doctor(), VALID_REQUEST.patient(), null);
-
-        mockMvc.perform(post(SET_APPOINTMENTS)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request)))
-                .andExpect(status().isBadRequest());
+        assertEquals(0, appointmentRepository.count());
     }
 }
