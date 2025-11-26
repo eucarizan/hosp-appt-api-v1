@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DoctorServiceImpl implements DoctorService {
 
@@ -32,4 +34,18 @@ public class DoctorServiceImpl implements DoctorService {
         logger.debug("Successfully created doctor: {}", saved.getId());
         return doctorMapper.toResponse(saved);
     }
+
+    @Override
+    public List<DoctorResponse> getAllDoctors() {
+        logger.debug("Attempting to list all doctors");
+
+        List<DoctorResponse> responseList = doctorRepository.findAll()
+                .stream()
+                .map(doctorMapper::toResponse)
+                .toList();
+
+        logger.debug("Successfully lists doctor: {}", responseList.size());
+        return responseList;
+    }
+
 }

@@ -55,10 +55,14 @@ public class DoctorServiceTest {
 
     @Test
     void getAllDoctors_returnsListOfDoctors() {
-        DoctorResponse doctor1 = new DoctorResponse(1L, "lea wong");
-        DoctorResponse doctor2 = new DoctorResponse(2L, "pamella upperson");
+        Doctor doctor1 = new Doctor( "lea wong");
+        Doctor doctor2 = new Doctor( "pamella upperson");
 
         when(doctorRepository.findAll()).thenReturn(List.of(doctor1, doctor2));
+        when(doctorMapper.toResponse(doctor1)).thenReturn(
+                new DoctorResponse(1L, "lea wong"));
+        when(doctorMapper.toResponse(doctor2)).thenReturn(
+                new DoctorResponse(2L, "pamella upperson"));
 
         List<DoctorResponse> responses = doctorService.getAllDoctors();
 
