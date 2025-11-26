@@ -21,8 +21,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AppointmentController.class)
 public class AppointmentControllerTest {
 
-    private static final String SET_APPOINTMENTS = "/setAppointment";
-    private static final String DELETE_APPOINTMENTS = "/deleteAppointment";
+    private static final String SET_APPOINTMENT = "/setAppointment";
+    private static final String DELETE_APPOINTMENT = "/deleteAppointment";
     private static final String GET_APPOINTMENTS = "/appointments";
     private static final AppointmentRequest VALID_REQUEST = new AppointmentRequest(
             "Dr. House", "John Doe", LocalDate.of(2021, 12, 1)
@@ -41,7 +41,7 @@ public class AppointmentControllerTest {
     void createAppointment_validRequest_returnsOk() throws Exception {
         when(appointmentService.createAppointment(any(AppointmentRequest.class))).thenReturn(VALID_RESPONSE);
 
-        mockMvc.perform(post(SET_APPOINTMENTS)
+        mockMvc.perform(post(SET_APPOINTMENT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(VALID_REQUEST)))
                 .andExpect(status().isOk())
@@ -54,7 +54,7 @@ public class AppointmentControllerTest {
     void createAppointment_nullDoctor_returnsBadRequest() throws Exception {
         AppointmentRequest request = new AppointmentRequest(null, VALID_REQUEST.patient(), VALID_REQUEST.date());
 
-        mockMvc.perform(post(SET_APPOINTMENTS)
+        mockMvc.perform(post(SET_APPOINTMENT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
@@ -66,7 +66,7 @@ public class AppointmentControllerTest {
     void createAppointment_emptyDoctor_returnsBadRequest() throws Exception {
         AppointmentRequest request = new AppointmentRequest("   ", VALID_REQUEST.patient(), VALID_REQUEST.date());
 
-        mockMvc.perform(post(SET_APPOINTMENTS)
+        mockMvc.perform(post(SET_APPOINTMENT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
@@ -78,7 +78,7 @@ public class AppointmentControllerTest {
     void createAppointment_nullPatient_returnsBadRequest() throws Exception {
         AppointmentRequest request = new AppointmentRequest(VALID_REQUEST.doctor(), null, VALID_REQUEST.date());
 
-        mockMvc.perform(post(SET_APPOINTMENTS)
+        mockMvc.perform(post(SET_APPOINTMENT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
@@ -90,7 +90,7 @@ public class AppointmentControllerTest {
     void createAppointment_emptyPatient_returnsBadRequest() throws Exception {
         AppointmentRequest request = new AppointmentRequest(VALID_REQUEST.doctor(), "   ", VALID_REQUEST.date());
 
-        mockMvc.perform(post(SET_APPOINTMENTS)
+        mockMvc.perform(post(SET_APPOINTMENT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
@@ -102,7 +102,7 @@ public class AppointmentControllerTest {
     void createAppointment_nullDate_returnsBadRequest() throws Exception {
         AppointmentRequest request = new AppointmentRequest(VALID_REQUEST.doctor(), VALID_REQUEST.patient(), null);
 
-        mockMvc.perform(post(SET_APPOINTMENTS)
+        mockMvc.perform(post(SET_APPOINTMENT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
@@ -114,7 +114,7 @@ public class AppointmentControllerTest {
     void deleteAppointment_existingId_returnsOk() throws Exception {
         when(appointmentService.deleteAppointment(1L)).thenReturn(VALID_RESPONSE);
 
-        mockMvc.perform(delete(DELETE_APPOINTMENTS)
+        mockMvc.perform(delete(DELETE_APPOINTMENT)
                         .param("id", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idApp").value(1))
@@ -126,7 +126,7 @@ public class AppointmentControllerTest {
         when(appointmentService.deleteAppointment(999L))
                 .thenThrow(new AppointmentNotFoundException("The appointment does not exist or was already cancelled"));
 
-        mockMvc.perform(delete(DELETE_APPOINTMENTS)
+        mockMvc.perform(delete(DELETE_APPOINTMENT)
                         .param("id", "999"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("The appointment does not exist or was already cancelled"));
