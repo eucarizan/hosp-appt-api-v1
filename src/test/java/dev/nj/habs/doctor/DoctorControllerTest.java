@@ -19,23 +19,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DoctorControllerTest {
 
     private static final String CREATE_DOCTOR = "/newDoctor";
+    private static final CreateDoctorRequest VALID_REQUEST = new CreateDoctorRequest("Lea Wong");
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    DoctorService doctorService;
+    private DoctorService doctorService;
+
+    @MockitoBean
+    private DoctorRepository doctorRepository;
 
     @Test
     void createDoctor_validRequest_returnsOk() throws Exception {
-        CreateDoctorRequest request = new CreateDoctorRequest("Lea Wong");
         DoctorResponse response = new DoctorResponse(1L, "lea wong");
 
         when(doctorService.createDoctor(any(CreateDoctorRequest.class))).thenReturn(response);
 
         mockMvc.perform(post(CREATE_DOCTOR)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request)))
+                        .content(asJsonString(VALID_REQUEST)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.doctorName").value("lea wong"));
@@ -75,5 +78,16 @@ public class DoctorControllerTest {
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.messages", hasItem("Doctor field is required")));
+    }
+
+    @Test
+    void createDoctor_doctorAlreadyExists_returnsBadRequest() throws Exception {
+        when(doctorRepository.existsByDoctorName("lea wong")).thenReturn(true);
+
+        mockMvc.perform(post(CREATE_DOCTOR)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(VALID_REQUEST)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Doctor already exists"));
     }
 }
