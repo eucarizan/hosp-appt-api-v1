@@ -37,6 +37,6 @@ public class DoctorControllerTest {
                         .content(asJsonString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$doctorName").value("lea wong"));
+                .andExpect(jsonPath("$.doctorName").value("lea wong"));
     }
 }
