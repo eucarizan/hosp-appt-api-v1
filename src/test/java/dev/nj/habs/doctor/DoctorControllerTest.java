@@ -8,6 +8,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static dev.nj.habs.TestUtils.asJsonString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -52,5 +53,16 @@ public class DoctorControllerTest {
                         .content(asJsonString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.doctorName").value("dr. house"));
+    }
+
+    @Test
+    void createDoctor_nullDoctor_returnsBadRequest() throws Exception {
+        CreateDoctorRequest request = new CreateDoctorRequest(null);
+
+        mockMvc.perform(post(CREATE_DOCTOR)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messages", hasItem("Doctor field is required")));
     }
 }
