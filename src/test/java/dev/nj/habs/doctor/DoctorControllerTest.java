@@ -39,4 +39,18 @@ public class DoctorControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.doctorName").value("lea wong"));
     }
+
+    @Test
+    void createDoctor_differentDoctor_returnsCorrectDoctor() throws Exception {
+        CreateDoctorRequest request = new CreateDoctorRequest("Dr. House");
+        DoctorResponse response = new DoctorResponse(2L, "dr. house");
+
+        when(doctorService.createDoctor(any(CreateDoctorRequest.class))).thenReturn(response);
+
+        mockMvc.perform(post(CREATE_DOCTOR)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.doctorName").value("dr. house"));
+    }
 }
