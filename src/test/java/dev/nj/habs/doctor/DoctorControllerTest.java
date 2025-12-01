@@ -65,4 +65,15 @@ public class DoctorControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.messages", hasItem("Doctor field is required")));
     }
+
+    @Test
+    void createDoctor_emptyDoctor_returnsBadRequest() throws Exception {
+        CreateDoctorRequest request = new CreateDoctorRequest("   ");
+
+        mockMvc.perform(post(CREATE_DOCTOR)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messages", hasItem("Doctor field is required")));
+    }
 }
