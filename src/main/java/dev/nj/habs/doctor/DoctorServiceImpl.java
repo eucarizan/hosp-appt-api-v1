@@ -26,17 +26,18 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public DoctorResponse createDoctor(CreateDoctorRequest request) {
-        logger.debug("Attempting to create a doctor");
         String doctorName = request.doctorName().trim().toLowerCase();
+        logger.debug("Creating doctor: {}", doctorName);
 
         if (doctorRepository.existsByDoctorName(doctorName)) {
+            logger.warn("Doctor already exists: {}", doctorName);
             throw new DoctorAlreadyExistsException("Doctor already exists");
         }
 
         Doctor doctor = new Doctor(doctorName);
         Doctor saved = doctorRepository.save(doctor);
 
-        logger.debug("Successfully created doctor: {}", saved.getId());
+        logger.debug("Doctor persisted: id={}, name={}", saved.getId(), saved.getDoctorName());
         return doctorMapper.toResponse(saved);
     }
 

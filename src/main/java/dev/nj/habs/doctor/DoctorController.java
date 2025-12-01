@@ -1,5 +1,6 @@
 package dev.nj.habs.doctor;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +20,9 @@ public class DoctorController {
     }
 
     @PostMapping("/newDoctor")
-    public ResponseEntity<DoctorResponse> createDoctor(@RequestBody CreateDoctorRequest request) {
+    public ResponseEntity<DoctorResponse> createDoctor(@Valid @RequestBody CreateDoctorRequest request) {
         logger.info("Received request to create a doctor: {}", request.doctorName());
         DoctorResponse response = doctorService.createDoctor(request);
-        logger.info("Successfully created doctor: {}", response.doctorName());
         return ResponseEntity.ok(response);
     }
 }

@@ -23,47 +23,26 @@ public class AppointmentController {
 
     @PostMapping("/setAppointment")
     public ResponseEntity<AppointmentResponse> createAppointment(@Valid @RequestBody AppointmentRequest request) {
-        logger.info("Received request to create an appointment");
+        logger.info("POST /setAppointment: doctor={}, patient={}", request.doctor(), request.patient());
         AppointmentResponse response = appointmentService.createAppointment(request);
-        logger.info("Successfully created appointment: {}", response.idApp());
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/deleteAppointment")
     public ResponseEntity<AppointmentResponse> deleteAppointment(@RequestParam("id") Long id) {
-        logger.info("Received request to delete appointment: {}", id);
+        logger.info("DELETE /deleteAppointment: id={}", id);
         AppointmentResponse response = appointmentService.deleteAppointment(id);
-        logger.info("Successfully deleted appointment: {}", id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/appointments")
     public ResponseEntity<List<AppointmentResponse>> getAppointments() {
-        logger.info("Received request to get appointments");
+        logger.info("GET /appointments");
         List<AppointmentResponse> appointments = appointmentService.getAllAppointments();
         if (appointments.isEmpty()) {
-            logger.warn("No appointments");
+            logger.warn("No appointments found");
             return ResponseEntity.noContent().build();
         }
-        logger.info("Returning {} appointments", appointments.size());
         return ResponseEntity.ok(appointments);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, List<String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        List<String> errors = ex.getBindingResult()
-                .getAllErrors()
-                .stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .toList();
-
-        logger.warn("Validation errors: {}", errors);
-        return ResponseEntity.badRequest().body(Map.of("messages", errors));
-    }
-
-    @ExceptionHandler(AppointmentNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleAppointmentNotFoundException(AppointmentNotFoundException ex) {
-        logger.warn("error: {}", ex.getMessage());
-        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
     }
 }

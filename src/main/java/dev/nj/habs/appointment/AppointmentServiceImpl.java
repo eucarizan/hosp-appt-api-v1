@@ -20,11 +20,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public AppointmentResponse createAppointment(AppointmentRequest request) {
-        logger.debug("Attempting to create an appointment");
+        logger.debug("Creating appointment: doctor={}, patient={}", request.doctor(), request.patient());
 
         Appointment appointment = appointmentRepository.save(new Appointment(request.doctor().toLowerCase(), request.patient().toLowerCase(), request.date()));
 
-        logger.debug("Successfully created an appointment");
+        logger.debug("Appointment persisted: id={}", appointment.getId());
         return appointmentMapper.toResponse(appointment);
     }
 
@@ -44,13 +44,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentResponse> getAllAppointments() {
-        logger.debug("Attempting to get list of all appointments");
+        logger.debug("Retrieving all appointments");
 
         List<AppointmentResponse> appointments = appointmentRepository.findAll()
                 .stream().map(appointmentMapper::toResponse)
                 .toList();
 
-        logger.debug("Successfully list appointments: {}", appointments.size());
+        logger.debug("Retrieved {} appointments", appointments.size());
         return appointments;
     }
 }
