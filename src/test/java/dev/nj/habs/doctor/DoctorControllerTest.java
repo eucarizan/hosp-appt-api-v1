@@ -144,4 +144,14 @@ public class DoctorControllerTest {
                         .param("doc", "lea wong"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void getAvailableDates_noDatesAvailable_returnsNoContent() throws Exception {
+        when(doctorService.getAvailableDatesByDoctor("lea wong"))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get(LIST_AVAILABLE_DATES)
+                        .param("doc", "lea wong"))
+                .andExpect(status().isNoContent());
+    }
 }

@@ -44,6 +44,10 @@ public class DoctorController {
         logger.info("GET /availableDatesByDoctor: doc={}", doctorName);
 
         List<AvailableDateResponse> dateResponseList = doctorService.getAvailableDatesByDoctor(doctorName);
+        if (dateResponseList.isEmpty()) {
+            logger.warn("No available dates");
+            return ResponseEntity.noContent().build();
+        }
 
         return ResponseEntity.ok(dateResponseList);
     }
