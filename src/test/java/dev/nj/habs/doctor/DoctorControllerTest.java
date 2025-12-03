@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static dev.nj.habs.TestUtils.asJsonString;
@@ -23,6 +24,7 @@ public class DoctorControllerTest {
 
     private static final String CREATE_DOCTOR = "/newDoctor";
     private static final String LIST_ALL_DOCTORS = "/allDoctorslist";
+    private static final String LIST_AVAILABLE_DATES = "/availableDatesByDoctor";
     private static final CreateDoctorRequest VALID_REQUEST = new CreateDoctorRequest("Lea Wong");
 
     @Autowired
@@ -102,7 +104,11 @@ public class DoctorControllerTest {
 
         mockMvc.perform(get(LIST_ALL_DOCTORS))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].doctorName").value("lea wong"))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].doctorName").value("pamela upperson"));
     }
 
     @Test
@@ -111,5 +117,21 @@ public class DoctorControllerTest {
 
         mockMvc.perform(get(LIST_ALL_DOCTORS))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void getAvailableDates_doctorExists_returnsOk() throws Exception {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        AvailableDateResponse date1 = new AvailableDateResponse(tomorrow, false);
+        AvailableDateResponse date2 = new AvailableDateResponse(tomorrow.plusDays(1), true);
+
+        when(doctorService.getAvailableDatesByDoctor("lea wong")).thenReturn(List.of(date1, date2));
+
+        mockMvc.perform(get(LIST_AVAILABLE_DATES)
+                        .param("doctor", "lea wong"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].booked").value(false))
+                .andExpect(jsonPath("$[1].booked").value(true));
     }
 }
