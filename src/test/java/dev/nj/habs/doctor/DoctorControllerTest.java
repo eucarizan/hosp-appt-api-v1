@@ -104,4 +104,12 @@ public class DoctorControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }
+
+    @Test
+    void getAllDoctors_noDoctors_returnsNoContent() throws Exception {
+        when(doctorService.getAllDoctors()).thenReturn(List.of());
+
+        mockMvc.perform(get(LIST_ALL_DOCTORS))
+                .andExpect(status().isNoContent());
+    }
 }
