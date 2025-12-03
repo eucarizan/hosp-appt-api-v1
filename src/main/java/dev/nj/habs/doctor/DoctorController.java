@@ -34,6 +34,10 @@ public class DoctorController {
         logger.info("GET /allDoctorslist");
 
         List<DoctorResponse> doctorsList = doctorService.getAllDoctors();
+        if (doctorsList.isEmpty()) {
+            logger.warn("No doctors found");
+            return ResponseEntity.noContent().build();
+        }
 
         return ResponseEntity.ok(doctorsList);
     }
