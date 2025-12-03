@@ -1,6 +1,7 @@
 package dev.nj.habs.config;
 
 import dev.nj.habs.appointment.AppointmentNotFoundException;
+import dev.nj.habs.doctor.DoctorAlreadyExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -32,6 +33,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AppointmentNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleAppointmentNotFoundException(AppointmentNotFoundException ex) {
         logger.warn("Appointment not found: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(DoctorAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleDoctorAlreadyExistsException(DoctorAlreadyExistsException ex) {
+        logger.warn("Failed to create doctor: {}", ex.getMessage());
         return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
     }
 }

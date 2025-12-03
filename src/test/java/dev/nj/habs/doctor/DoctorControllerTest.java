@@ -27,9 +27,6 @@ public class DoctorControllerTest {
     @MockitoBean
     private DoctorService doctorService;
 
-    @MockitoBean
-    private DoctorRepository doctorRepository;
-
     @Test
     void createDoctor_validRequest_returnsOk() throws Exception {
         DoctorResponse response = new DoctorResponse(1L, "lea wong");
@@ -82,7 +79,8 @@ public class DoctorControllerTest {
 
     @Test
     void createDoctor_doctorAlreadyExists_returnsBadRequest() throws Exception {
-        when(doctorRepository.existsByDoctorName("lea wong")).thenReturn(true);
+        when(doctorService.createDoctor(any(CreateDoctorRequest.class)))
+                .thenThrow(new DoctorAlreadyExistsException("Doctor already exists"));
 
         mockMvc.perform(post(CREATE_DOCTOR)
                         .contentType(MediaType.APPLICATION_JSON)
