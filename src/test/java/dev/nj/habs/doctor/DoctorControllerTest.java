@@ -128,10 +128,20 @@ public class DoctorControllerTest {
         when(doctorService.getAvailableDatesByDoctor("lea wong")).thenReturn(List.of(date1, date2));
 
         mockMvc.perform(get(LIST_AVAILABLE_DATES)
-                        .param("doctor", "lea wong"))
+                        .param("doc", "lea wong"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].booked").value(false))
                 .andExpect(jsonPath("$[1].booked").value(true));
+    }
+
+    @Test
+    void getAvailableDates_doctorNotExists_returnsNotFound() throws Exception {
+        when(doctorService.getAvailableDatesByDoctor("lea wong"))
+                .thenThrow(new DoctorNotFoundException("Doctor not found"));
+
+        mockMvc.perform(get(LIST_AVAILABLE_DATES)
+                        .param("doc", "lea wong"))
+                .andExpect(status().isNotFound());
     }
 }

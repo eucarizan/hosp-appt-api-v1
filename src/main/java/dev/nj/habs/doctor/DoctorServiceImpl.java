@@ -60,7 +60,8 @@ public class DoctorServiceImpl implements DoctorService {
         logger.debug("Attempting to get list of available dates for doctor: {}", doctorName);
 
         if (!doctorRepository.existsByDoctorName(doctorName)) {
-            return List.of();
+            logger.warn("Doctor not found: doc='{}'", doctorName);
+            throw new DoctorNotFoundException("Doctor not found");
         }
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);

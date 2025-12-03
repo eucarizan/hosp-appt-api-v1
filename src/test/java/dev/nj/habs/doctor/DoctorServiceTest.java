@@ -117,9 +117,11 @@ public class DoctorServiceTest {
 
         when(doctorRepository.existsByDoctorName(doctorName)).thenReturn(false);
 
-        List<AvailableDateResponse> responses = doctorService.getAvailableDatesByDoctor(doctorName);
+        Exception exception = assertThrows(
+                DoctorNotFoundException.class,
+                () -> doctorService.getAvailableDatesByDoctor(doctorName));
 
-        assertTrue(responses.isEmpty());
+        assertTrue(exception.getMessage().contains("Doctor not found"));
     }
 
     @Test
