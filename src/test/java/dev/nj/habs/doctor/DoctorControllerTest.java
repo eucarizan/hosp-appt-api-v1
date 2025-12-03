@@ -7,10 +7,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static dev.nj.habs.TestUtils.asJsonString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DoctorControllerTest {
 
     private static final String CREATE_DOCTOR = "/newDoctor";
+    private static final String LIST_ALL_DOCTORS = "/allDoctorslist";
     private static final CreateDoctorRequest VALID_REQUEST = new CreateDoctorRequest("Lea Wong");
 
     @Autowired
@@ -87,5 +91,17 @@ public class DoctorControllerTest {
                         .content(asJsonString(VALID_REQUEST)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Doctor already exists"));
+    }
+
+    @Test
+    void getAllDoctors_withDoctors_returnsOk() throws Exception {
+        DoctorResponse response1 = new DoctorResponse(1L, "lea wong");
+        DoctorResponse response2 = new DoctorResponse(2L, "pamela upperson");
+
+        when(doctorService.getAllDoctors()).thenReturn(List.of(response1, response2));
+
+        mockMvc.perform(get(LIST_ALL_DOCTORS))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
     }
 }
