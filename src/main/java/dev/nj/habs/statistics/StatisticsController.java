@@ -31,4 +31,12 @@ public class StatisticsController {
 
         return ResponseEntity.ok(statistics);
     }
+
+    @GetMapping("/statisticsDoc")
+    public ResponseEntity<?> getStatisticsDoc() {
+        logger.info("GET /statisticsDoc");
+        List<Map<String, Object>> statistics = appointmentService.getStatisticsByDoctor();
+
+        return ResponseEntity.ok(statistics);
+    }
 }
