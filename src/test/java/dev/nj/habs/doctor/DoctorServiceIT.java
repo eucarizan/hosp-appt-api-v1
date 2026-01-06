@@ -147,4 +147,58 @@ public class DoctorServiceIT {
         assertFalse(responses.get(2).booked());
         assertFalse(responses.get(3).booked());
     }
+
+    @Test
+    void it_deleteDoctor_regularDoctor_transfersAppointmentsToDirector() {
+        Doctor doctor = new Doctor(DR_WONG);
+        doctorRepository.save(doctor);
+
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        Appointment appointment = new Appointment(DR_WONG, "john doe", tomorrow);
+        appointmentRepository.save(appointment);
+
+        DoctorResponse response = doctorService.deleteDoctor(DR_WONG);
+
+        assertEquals(DR_WONG, response.doctorName());
+        assertFalse(doctorRepository.existsByDoctorName(DR_WONG));
+        assertTrue(doctorRepository.existsByDoctorName("director"));
+        assertTrue(appointmentRepository.existsByDoctorAndDate("director", tomorrow));
+    }
+
+    @Test
+    void it_deleteDoctor_nonExistingDoctor_throwsException() {
+        Exception exception = assertThrows(
+                DoctorNotFoundException.class,
+                () -> doctorService.deleteDoctor("unknown doctor"));
+
+        assertTrue(exception.getMessage().contains("Doctor not found"));
+    }
+
+    @Test
+    void it_deleteDoctor_director_deletesAppointments() {
+        Doctor director = new Doctor("director");
+        doctorRepository.save(director);
+
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        Appointment appointment = new Appointment("director", "john doe", tomorrow);
+        appointmentRepository.save(appointment);
+
+        DoctorResponse response = doctorService.deleteDoctor("director");
+
+        assertEquals("director", response.doctorName());
+        assertFalse(doctorRepository.existsByDoctorName("director"));
+        assertFalse(appointmentRepository.existsByDoctorAndDate("director", tomorrow));
+    }
+
+    @Test
+    void it_deleteDoctor_createsDirectorIfNotExists() {
+        Doctor doctor = new Doctor(DR_WONG);
+        doctorRepository.save(doctor);
+
+        assertFalse(doctorRepository.existsByDoctorName("director"));
+
+        doctorService.deleteDoctor(DR_WONG);
+
+        assertTrue(doctorRepository.existsByDoctorName("director"));
+    }
 }
