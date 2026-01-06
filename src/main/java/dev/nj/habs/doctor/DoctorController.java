@@ -51,4 +51,15 @@ public class DoctorController {
 
         return ResponseEntity.ok(dateResponseList);
     }
+
+    @DeleteMapping("/deleteDoctor")
+    public ResponseEntity<?>  deleteDoctor(@RequestParam("doc") String doctorName) {
+        logger.info("DELETE /deleteDoctor: doc={}", doctorName);
+        try {
+            DoctorResponse response =  doctorService.deleteDoctor(doctorName);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Doctor not found");
+        }
+    }
 }
