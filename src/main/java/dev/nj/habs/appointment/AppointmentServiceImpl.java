@@ -92,4 +92,16 @@ public class AppointmentServiceImpl implements AppointmentService {
                 })
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Map<String, Object>> getStatisticsByDoctor() {
+        List<Object[]> results = appointmentRepository.countAppointmentsByDoctor();
+        return results.stream()
+                .map(row -> {
+                    Map<String, Object> map = new LinkedHashMap<>();
+                    map.put((String) row[0], row[1]);
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
 }

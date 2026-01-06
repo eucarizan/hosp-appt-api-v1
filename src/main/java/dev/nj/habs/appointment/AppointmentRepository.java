@@ -17,4 +17,7 @@ public interface AppointmentRepository extends ListCrudRepository<Appointment, L
 
     @Query("SELECT a.date, COUNT(a) FROM Appointment a GROUP BY a.date")
     List<Object[]> countAppointmentsByDate();
+
+    @Query("SELECT a.doctor, COUNT(a) FROM Appointment a GROUP BY a.doctor")
+    List<Object[]> countAppointmentsByDoctor();
 }

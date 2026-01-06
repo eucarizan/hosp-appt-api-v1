@@ -15,4 +15,6 @@ public interface AppointmentService {
     void deleteAppointmentsByDoctor(String doctorName);
 
     List<Map<String, Object>> getStatisticsByDay();
+
+    List<Map<String, Object>> getStatisticsByDoctor();
 }
