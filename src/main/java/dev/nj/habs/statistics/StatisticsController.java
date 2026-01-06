@@ -24,6 +24,11 @@ public class StatisticsController {
     public ResponseEntity<?> getStatisticsDay() {
         logger.info("GET /statisticsDay");
         List<Map<String, Object>> statistics = appointmentService.getStatisticsByDay();
+
+        if (statistics.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
         return ResponseEntity.ok(statistics);
     }
 }
