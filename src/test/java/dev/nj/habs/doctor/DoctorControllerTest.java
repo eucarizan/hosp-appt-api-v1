@@ -15,8 +15,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DoctorController.class)
 public class DoctorControllerTest {
@@ -165,5 +164,16 @@ public class DoctorControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.doctorName").value("lea wong"));
+    }
+
+    @Test
+    void deleteDoctor_doctorDoesNotExists_returnsBadRequest() throws Exception {
+        when(doctorService.deleteDoctor("unknown"))
+                .thenThrow(new DoctorNotFoundException("Doctor not found"));
+
+        mockMvc.perform(delete("/deleteDoctor")
+                .param("doc", "unknown"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Doctor not found"));
     }
 }
