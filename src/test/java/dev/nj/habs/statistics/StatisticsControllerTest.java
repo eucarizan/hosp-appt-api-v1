@@ -30,9 +30,9 @@ public class StatisticsControllerTest {
     @Test
     void getStatisticsDay_withAppointments_returnsOk() throws Exception {
         Map<String, Object> stat1 = new LinkedHashMap<>();
-        stat1.put("2022-10-15", 1L);
+        stat1.put("2022-10-15", 2L);
         Map<String, Object> stat2 = new LinkedHashMap<>();
-        stat2.put("2022-10-16", 2L);
+        stat2.put("2022-10-16", 1L);
 
         when(appointmentService.getStatisticsByDay()).thenReturn(Arrays.asList(stat1, stat2));
 
