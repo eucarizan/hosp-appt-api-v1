@@ -8,6 +8,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -40,5 +41,13 @@ public class StatisticsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0]['2022-10-15']").value(2))
                 .andExpect(jsonPath("$[1]['2022-10-16']").value(1));
+    }
+
+    @Test
+    void getStatisticsDay_withoutAppointments_returnsNoContent() throws Exception {
+        when(appointmentService.getStatisticsByDay()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get(GET_STATISTICS_DAY))
+                .andExpect(status().isNoContent());
     }
 }
