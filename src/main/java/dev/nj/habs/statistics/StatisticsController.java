@@ -40,7 +40,7 @@ public class StatisticsController {
         if (statistics.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        
+
         return ResponseEntity.ok(statistics);
     }
 }

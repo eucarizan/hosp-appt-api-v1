@@ -71,7 +71,8 @@ public class DoctorServiceImpl implements DoctorService {
         List<AvailableDateResponse> responseList = new ArrayList<>();
 
         for (int i = 0; i < 4; i++) {
-            boolean booked = appointmentRepository.existsByDoctorAndDate(doctorName, tomorrow.plusDays(i));
+            boolean booked = !"director".equals(doctorName) &&
+                    appointmentRepository.existsByDoctorAndDate(doctorName, tomorrow.plusDays(i));
             AvailableDateResponse response = new AvailableDateResponse(tomorrow.plusDays(i), booked);
             responseList.add(response);
         }
