@@ -163,4 +163,31 @@ public class DoctorServiceTest {
         verify(appointmentService).transferAppointmentsToDirector("lea wong");
         verify(doctorRepository).delete(savedDoctor);
     }
+
+    @Test
+    void deleteDoctor_director_deletesAllAppointments() {
+        Doctor director = new Doctor("director");
+        director.setId(99L);
+        when(doctorRepository.findByDoctorName("director")).thenReturn(Optional.of(director));
+        when(doctorMapper.toResponse(director)).thenReturn(new  DoctorResponse(99L, "director"));
+
+        DoctorResponse response = doctorService.deleteDoctor("director");
+
+        assertNotNull(response);
+        assertEquals("director", response.doctorName());
+        verify(appointmentService).deleteAppointmentsByDoctor("director");
+        verify(appointmentService, never()).transferAppointmentsToDirector(anyString());
+        verify(doctorRepository).delete(director);
+    }
+
+    @Test
+    void deleteDoctor_doctorDoesNotExists_throwsException() {
+        when(doctorRepository.findByDoctorName("unknown")).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(
+                DoctorNotFoundException.class,
+                () -> doctorService.deleteDoctor("unknown"));
+        
+        assertEquals("Doctor not found", exception.getMessage());
+    }
 }
