@@ -49,4 +49,10 @@ public class GlobalExceptionHandler {
 //        return ResponseEntity.notFound().build();
         return ResponseEntity.noContent().build();
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        logger.warn("Invalid argument: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
 }
