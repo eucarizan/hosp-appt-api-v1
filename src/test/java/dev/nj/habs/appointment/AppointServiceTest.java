@@ -8,7 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -113,5 +115,16 @@ public class AppointServiceTest {
         List<AppointmentResponse> responses = appointmentService.getAllAppointments();
 
         assertTrue(responses.isEmpty());
+    }
+
+    @Test
+    void getStatisticsByDay_returnsStatistics() {
+        Object[] stat1 = {LocalDate.of(2022, 10, 15), 2L};
+        Object[] stat2 = {LocalDate.of(2022, 10, 16), 1L};
+        when(appointmentRepository.countAppointmentsByDate()).thenReturn(Arrays.asList(stat1, stat2));
+
+        List<Map<String, Object>> statistics = appointmentService.getStatisticsByDay();
+
+        assertEquals(2, statistics.size());
     }
 }
