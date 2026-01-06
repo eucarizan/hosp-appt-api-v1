@@ -127,4 +127,15 @@ public class AppointServiceTest {
 
         assertEquals(2, statistics.size());
     }
+
+    @Test
+    void getStatisticsByDoctor_returnsStatistics() {
+        Object[] stat1 = {"dr. house", 3L};
+        Object[] stat2 = {"lea wong", 2L};
+        when(appointmentRepository.countAppointmentsByDoctor()).thenReturn(Arrays.asList(stat1, stat2));
+
+        List<Map<String, Object>> statistics = appointmentService.getStatisticsByDoctor();
+
+        assertEquals(2, statistics.size());
+    }
 }
