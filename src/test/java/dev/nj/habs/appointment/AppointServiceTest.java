@@ -55,6 +55,17 @@ public class AppointServiceTest {
     }
 
     @Test
+    void createAppointment_doctorIsDirector_throwsException() {
+        AppointmentRequest request = new AppointmentRequest("director", "John Doe", LocalDate.now());
+
+        Exception exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> appointmentService.createAppointment(request));
+
+        assertEquals("Cannot set appointments for director", exception.getMessage());
+    }
+
+    @Test
     void deleteAppointment_existingId_returnsDeletedAppointment() {
         when(appointmentRepository.findById(1L)).thenReturn(Optional.of(savedAppointment));
         when(appointmentMapper.toResponse(any(Appointment.class))).thenReturn(appointmentResponse);

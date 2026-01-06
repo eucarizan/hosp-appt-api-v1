@@ -24,7 +24,15 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentResponse createAppointment(AppointmentRequest request) {
         logger.debug("Creating appointment: doctor={}, patient={}", request.doctor(), request.patient());
 
-        Appointment appointment = appointmentRepository.save(new Appointment(request.doctor().toLowerCase(), request.patient().toLowerCase(), request.date()));
+        if ("director".equalsIgnoreCase(request.doctor().trim())) {
+            throw new IllegalArgumentException("Cannot set appointments for director");
+        }
+
+        Appointment appointment = appointmentRepository.save(
+                new Appointment(
+                        request.doctor().trim().toLowerCase(),
+                        request.patient().trim().toLowerCase(),
+                        request.date()));
 
         logger.debug("Appointment persisted: id={}", appointment.getId());
         return appointmentMapper.toResponse(appointment);
