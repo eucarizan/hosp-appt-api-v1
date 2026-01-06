@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class StatisticsControllerTest {
 
     private static final String GET_STATISTICS_DAY = "/statisticsDay";
+    private static final String GET_STATISTICS_DOC = "/statisticsDoc";
 
     @Autowired
     MockMvc mockMvc;
@@ -49,5 +50,20 @@ public class StatisticsControllerTest {
 
         mockMvc.perform(get(GET_STATISTICS_DAY))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void getStatisticsDoctor_withAppointments_returnsOk() throws Exception {
+        Map<String, Object> stat1 = new LinkedHashMap<>();
+        stat1.put("dr. house", 3L);
+        Map<String, Object> stat2 = new LinkedHashMap<>();
+        stat2.put("lea wong", 2L);
+
+        when(appointmentService.getStatisticsByDoctor()).thenReturn(Arrays.asList(stat1, stat2));
+
+        mockMvc.perform(get(GET_STATISTICS_DOC))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]['dr. house']").value(3))
+                .andExpect(jsonPath("$[1]['lea wong']").value(2));
     }
 }
