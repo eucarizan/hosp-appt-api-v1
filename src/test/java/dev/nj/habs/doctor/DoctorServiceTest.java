@@ -169,7 +169,7 @@ public class DoctorServiceTest {
         Doctor director = new Doctor("director");
         director.setId(99L);
         when(doctorRepository.findByDoctorName("director")).thenReturn(Optional.of(director));
-        when(doctorMapper.toResponse(director)).thenReturn(new  DoctorResponse(99L, "director"));
+        when(doctorMapper.toResponse(director)).thenReturn(new DoctorResponse(99L, "director"));
 
         DoctorResponse response = doctorService.deleteDoctor("director");
 
@@ -187,7 +187,7 @@ public class DoctorServiceTest {
         Exception exception = assertThrows(
                 DoctorNotFoundException.class,
                 () -> doctorService.deleteDoctor("unknown"));
-        
+
         assertEquals("Doctor not found", exception.getMessage());
     }
 }

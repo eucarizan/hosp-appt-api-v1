@@ -14,8 +14,7 @@ import static dev.nj.habs.TestUtils.asJsonString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -136,13 +135,13 @@ public class DoctorControllerTest {
     }
 
     @Test
-    void getAvailableDates_doctorNotExists_returnsNotFound() throws Exception {
+    void getAvailableDates_doctorNotExists_returnsNoContent() throws Exception {
         when(doctorService.getAvailableDatesByDoctor("lea wong"))
                 .thenThrow(new DoctorNotFoundException("Doctor not found"));
 
         mockMvc.perform(get(LIST_AVAILABLE_DATES)
                         .param("doc", "lea wong"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -153,5 +152,18 @@ public class DoctorControllerTest {
         mockMvc.perform(get(LIST_AVAILABLE_DATES)
                         .param("doc", "lea wong"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteDoctor_doctorExists_returnsOk() throws Exception {
+        DoctorResponse response =  new DoctorResponse(1L, "lea wong");
+
+        when(doctorService.deleteDoctor("lea wong")).thenReturn(response);
+
+        mockMvc.perform(delete("/deleteDoctor")
+                .param("doc", "lea wong"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.doctorName").value("lea wong"));
     }
 }
