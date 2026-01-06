@@ -1,6 +1,7 @@
 package dev.nj.habs.doctor;
 
 import dev.nj.habs.appointment.AppointmentRepository;
+import dev.nj.habs.appointment.AppointmentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,6 +30,9 @@ public class DoctorServiceTest {
 
     @Mock
     DoctorMapper doctorMapper;
+
+    @Mock
+    AppointmentService appointmentService;;
 
     @InjectMocks
     DoctorServiceImpl doctorService;
@@ -148,8 +152,9 @@ public class DoctorServiceTest {
     void deleteDoctor_regularDoctor_transfersAppointmentsToDirector() {
         Doctor savedDoctor = new Doctor("lea wong");
         savedDoctor.setId(1L);
-        when(doctorRepository.findByDoctorName("lea wong").thenReturn(Optional.of(savedDoctor)));
+        when(doctorRepository.findByDoctorName("lea wong")).thenReturn(Optional.of(savedDoctor));
         when(doctorRepository.existsByDoctorName("director")).thenReturn(true);
+        when(doctorMapper.toResponse(savedDoctor)).thenReturn(new DoctorResponse(1L, DR_WONG));
 
         DoctorResponse response = doctorService.deleteDoctor("lea wong");
 

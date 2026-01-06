@@ -8,4 +8,8 @@ public interface AppointmentService {
     AppointmentResponse deleteAppointment(Long id);
 
     List<AppointmentResponse> getAllAppointments();
+
+    void transferAppointmentsToDirector(String doctorName);
+
+    void deleteAppointmentsByDoctor(String doctorName);
 }

@@ -24,6 +24,10 @@ public class Doctor {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getDoctorName() {
         return doctorName;
     }

@@ -1,6 +1,7 @@
 package dev.nj.habs.doctor;
 
 import dev.nj.habs.appointment.AppointmentRepository;
+import dev.nj.habs.appointment.AppointmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,13 @@ public class DoctorServiceImpl implements DoctorService {
 
     private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
+    private final AppointmentService appointmentService;
     private final DoctorMapper doctorMapper;
 
-    public DoctorServiceImpl(DoctorRepository doctorRepository, AppointmentRepository appointmentRepository, DoctorMapper doctorMapper) {
+    public DoctorServiceImpl(DoctorRepository doctorRepository, AppointmentRepository appointmentRepository, AppointmentService appointmentService, DoctorMapper doctorMapper) {
         this.doctorRepository = doctorRepository;
         this.appointmentRepository = appointmentRepository;
+        this.appointmentService = appointmentService;
         this.doctorMapper = doctorMapper;
     }
 
@@ -75,5 +78,30 @@ public class DoctorServiceImpl implements DoctorService {
 
         logger.debug("Successfully listed {} dates", responseList.size());
         return responseList;
+    }
+
+    @Override
+    public DoctorResponse deleteDoctor(String doctorName) {
+        String normalizedName = doctorName.trim().toLowerCase();
+        logger.info("Attempting to delete doctor: {}", normalizedName);
+
+        Doctor doctor = doctorRepository.findByDoctorName(normalizedName)
+                .orElseThrow(() -> new DoctorNotFoundException("Doctor not found"));
+
+        DoctorResponse response = doctorMapper.toResponse(doctor);
+
+        if ("director".equals(normalizedName)) {
+            appointmentService.deleteAppointmentsByDoctor("director");
+        } else {
+            if (!doctorRepository.existsByDoctorName("director")) {
+                Doctor director = new Doctor("director");
+                doctorRepository.save(director);
+            }
+            appointmentService.transferAppointmentsToDirector(normalizedName);
+        }
+
+        doctorRepository.delete(doctor);
+        logger.info("Successfully deleted doctor: {}", normalizedName);
+        return response;
     }
 }

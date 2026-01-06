@@ -1,10 +1,12 @@
 package dev.nj.habs.appointment;
 
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -52,5 +54,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         logger.debug("Retrieved {} appointments", appointments.size());
         return appointments;
+    }
+
+    @Transactional
+    public void transferAppointmentsToDirector(String fromDoctor) {
+        List<Appointment> appointments = appointmentRepository.findByDoctor(fromDoctor.toLowerCase());
+        for (Appointment appointment : appointments) {
+            appointment.setDoctor("director");
+        }
+        appointmentRepository.saveAll(appointments);
+    }
+
+    @Transactional
+    public void deleteAppointmentsByDoctor(String doctorName) {
+        appointmentRepository.deleteByDoctor(doctorName.toLowerCase());
     }
 }

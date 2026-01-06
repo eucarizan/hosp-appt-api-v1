@@ -40,6 +40,10 @@ public class Appointment {
         return doctor;
     }
 
+    public void setDoctor(String doctor) {
+        this.doctor = doctor;
+    }
+
     public String getPatient() {
         return patient;
     }

@@ -8,4 +8,6 @@ public interface DoctorService {
     List<DoctorResponse> getAllDoctors();
 
     List<AvailableDateResponse> getAvailableDatesByDoctor(String doctor);
+
+    DoctorResponse deleteDoctor(String doctor);
 }
