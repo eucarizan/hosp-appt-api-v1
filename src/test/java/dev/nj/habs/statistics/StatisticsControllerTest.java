@@ -66,4 +66,12 @@ public class StatisticsControllerTest {
                 .andExpect(jsonPath("$[0]['dr. house']").value(3))
                 .andExpect(jsonPath("$[1]['lea wong']").value(2));
     }
+
+    @Test
+    void getStatisticsDoctor_withoutAppointments_returnsNoContent() throws Exception {
+        when(appointmentService.getStatisticsByDoctor()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get(GET_STATISTICS_DOC))
+                .andExpect(status().isNoContent());
+    }
 }
