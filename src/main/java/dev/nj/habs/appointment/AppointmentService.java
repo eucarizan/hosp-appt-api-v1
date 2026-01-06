@@ -1,6 +1,7 @@
 package dev.nj.habs.appointment;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AppointmentService {
     AppointmentResponse createAppointment(AppointmentRequest request);
@@ -12,4 +13,6 @@ public interface AppointmentService {
     void transferAppointmentsToDirector(String doctorName);
 
     void deleteAppointmentsByDoctor(String doctorName);
+
+    List<Map<String, Object>> getStatisticsByDay();
 }

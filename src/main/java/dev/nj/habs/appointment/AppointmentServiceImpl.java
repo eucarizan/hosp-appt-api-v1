@@ -5,8 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -76,5 +79,17 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Transactional
     public void deleteAppointmentsByDoctor(String doctorName) {
         appointmentRepository.deleteByDoctor(doctorName.toLowerCase());
+    }
+
+    @Override
+    public List<Map<String, Object>> getStatisticsByDay() {
+        List<Object[]> results = appointmentRepository.countAppointmentsByDate();
+        return results.stream()
+                .map(row -> {
+                    Map<String, Object> map = new LinkedHashMap<>();
+                    map.put(row[0].toString(), row[1]);
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 }
