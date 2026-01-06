@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -141,5 +142,20 @@ public class DoctorServiceTest {
         assertFalse(responses.get(1).booked());
         assertFalse(responses.get(2).booked());
         assertFalse(responses.get(3).booked());
+    }
+
+    @Test
+    void deleteDoctor_regularDoctor_transfersAppointmentsToDirector() {
+        Doctor savedDoctor = new Doctor("lea wong");
+        savedDoctor.setId(1L);
+        when(doctorRepository.findByDoctorName("lea wong").thenReturn(Optional.of(savedDoctor)));
+        when(doctorRepository.existsByDoctorName("director")).thenReturn(true);
+
+        DoctorResponse response = doctorService.deleteDoctor("lea wong");
+
+        assertNotNull(response);
+        assertEquals("lea wong", response.doctorName());
+        verify(appointmentService).transferAppointmentsToDirector("lea wong");
+        verify(doctorRepository).delete(savedDoctor);
     }
 }
