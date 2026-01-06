@@ -64,6 +64,18 @@ public class AppointmentServiceIT {
     }
 
     @Test
+    void it_createAppointment_doctorIsDirector_throwsException() {
+        AppointmentRequest request = new AppointmentRequest("director", "John Doe", DATE1);
+
+        Exception exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> appointmentService.createAppointment(request));
+
+        assertEquals("Cannot set appointments for director", exception.getMessage());
+        assertEquals(0, appointmentRepository.count());
+    }
+
+    @Test
     void it_deleteAppointment_existingId_removesFromDatabase() {
         Appointment appointment = new Appointment("dr. house", "john doe", DATE1);
         appointment = appointmentRepository.save(appointment);
