@@ -37,6 +37,10 @@ public class StatisticsController {
         logger.info("GET /statisticsDoc");
         List<Map<String, Object>> statistics = appointmentService.getStatisticsByDoctor();
 
+        if (statistics.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        
         return ResponseEntity.ok(statistics);
     }
 }
