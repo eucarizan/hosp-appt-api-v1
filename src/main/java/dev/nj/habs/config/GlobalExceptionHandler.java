@@ -46,6 +46,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DoctorNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleDoctorNotFoundException(DoctorNotFoundException ex) {
         logger.warn("Failed to retrieve list of available dates: {}", ex.getMessage());
-        return ResponseEntity.notFound().build();
+//        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 }
